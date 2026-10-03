@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Odommo Batch: Toxic Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ece9f7;--ink:#1d1a2b;--mute:#6b6782;--card:#fff;--red:#e8365d;--line:#cfc9e6}
+@media (prefers-color-scheme:dark){:root{--bg:#17142a;--ink:#f1eefc;--mute:#9a95b8;--card:#221e3a;--line:#3a3560}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "DM Sans",system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:28px 16px 64px}
+h1{font:800 clamp(2rem,8vw,3.2rem)/1 Archivo,system-ui,sans-serif;margin:0 0 8px;letter-spacing:-.02em}
+h2{font:800 1.25rem Archivo,system-ui,sans-serif;margin:28px 0 10px}
+.sub{color:var(--mute);margin:0 0 24px;max-width:52ch}
+.list{display:grid;gap:10px}
+.who{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 18px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:inherit;font:800 1.2rem Archivo,system-ui,sans-serif;cursor:pointer;text-align:left}
+.who small{font:500 .85rem "DM Sans",sans-serif;color:var(--mute)}
+.who[aria-pressed=true]{border-color:var(--red);background:repeating-linear-gradient(135deg,var(--card) 0 14px,color-mix(in srgb,var(--red) 12%,var(--card)) 14px 28px)}
+.who:focus-visible,button:focus-visible,label:focus-within{outline:3px solid var(--red);outline-offset:2px}
+.drop{display:block;padding:26px;border:2px dashed var(--line);border-radius:14px;text-align:center;color:var(--mute);cursor:pointer;background:var(--card)}
+.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.prev{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.prev img{width:72px;height:72px;object-fit:cover;border-radius:8px}
+.go{padding:13px 22px;border:0;border-radius:12px;background:var(--red);color:#fff;font:800 1rem Archivo,sans-serif;cursor:pointer}
+.go:disabled{opacity:.45;cursor:not-allowed}
+#msg{margin:10px 0 0;min-height:1.5em}
+.err{color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.grid img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;background:var(--card);display:block}
+.empty{color:var(--mute)}
+[hidden]{display:none}
+</style>
+</head>
+<body>
+<main>
+  <h1>Odommo Batch<br>Toxic Board</h1>
+  <p class="sub">Pick a member, then upload screenshots as proof. Every screenshot is public.</p>
+
+  <div class="list" id="list" role="group" aria-label="Members"></div>
+
+  <section id="panel" hidden>
+    <h2 id="ptitle"></h2>
+    <label class="drop">
+      <input type="file" id="file" accept="image/*" multiple>
+      Tap to choose screenshots (up to 5)
+    </label>
+    <div class="prev" id="prev"></div>
+    <button class="go" id="go" disabled>Upload screenshots</button>
+    <p id="msg" role="status"></p>
+
+    <h2>Screenshots</h2>
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty" hidden>No screenshots yet. Be the first to upload one.</p>
+  </section>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+let names = [], shots = {}, sel = null, picked = [];
+
+async function init() {
+  try { names = await (await fetch("/toxic.json", { cache: "no-store" })).json(); }
+  catch { $("#list").textContent = "Could not load toxic.json."; return; }
+  try { shots = await (await fetch("/.netlify/functions/list")).json(); } catch {}
+  renderList();
+}
+
+function renderList() {
+  const list = $("#list");
+  list.innerHTML = "";
+  names.forEach((n) => {
+    const b = document.createElement("button");
+    b.className = "who";
+    b.setAttribute("aria-pressed", n === sel);
+    const c = (shots[slug(n)] || []).length;
+    const t = document.createElement("span"); t.textContent = n;
+    const s = document.createElement("small"); s.textContent = c + (c === 1 ? " screenshot" : " screenshots");
+    b.append(t, s);
+    b.onclick = () => { sel = n; picked = []; $("#file").value = ""; renderList(); renderPanel(); };
+    list.append(b);
+  });
+}
+
+function renderPanel() {
+  $("#panel").hidden = !sel;
+  if (!sel) return;
+  $("#ptitle").textContent = "Upload against " + sel;
+  const urls = shots[slug(sel)] || [];
+  const grid = $("#grid"); grid.innerHTML = "";
+  urls.forEach((u) => {
+    const a = document.createElement("a"); a.href = u; a.target = "_blank"; a.rel = "noopener";
+    const i = document.createElement("img"); i.src = u; i.loading = "lazy"; i.alt = "Screenshot against " + sel;
+    a.append(i); grid.append(a);
+  });
+  $("#empty").hidden = urls.length > 0;
+  renderPrev();
+}
+
+function renderPrev() {
+  const p = $("#prev"); p.innerHTML = "";
+  picked.forEach((d) => { const i = document.createElement("img"); i.src = d; i.alt = "Selected screenshot"; p.append(i); });
+  $("#go").disabled = picked.length === 0;
+}
+
+// Shrink to max 1600px JPEG so uploads stay well under Netlify's 6 MB limit
+async function compress(file) {
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", 0.8);
+}
+
+$("#file").onchange = async (e) => {
+  const files = [...e.target.files].slice(0, 5);
+  setMsg("Preparing…");
+  try { picked = await Promise.all(files.map(compress)); setMsg(""); }
+  catch { picked = []; setMsg("Could not read one of those images.", true); }
+  renderPrev();
+};
+
+function setMsg(t, err) { const m = $("#msg"); m.textContent = t; m.className = err ? "err" : ""; }
+
+$("#go").onclick = async () => {
+  $("#go").disabled = true; setMsg("Uploading…");
+  try {
+    const r = await fetch("/.netlify/functions/upload", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: sel, images: picked }),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || "Upload failed.");
+    shots[slug(sel)] = [...j.urls, ...(shots[slug(sel)] || [])];
+    picked = []; $("#file").value = "";
+    setMsg("Uploaded. Screenshots may take a few minutes to appear for everyone.");
+    renderList(); renderPanel();
+  } catch (e) { setMsg(e.message, true); $("#go").disabled = false; }
+};
+
+init();
+</script>
+</body>
+</html>
