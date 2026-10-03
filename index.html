@@ -3,145 +3,296 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Odommo Batch: Toxic Board</title>
+<title>Odommo Batch · Evidence Board</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#ece9f7;--ink:#1d1a2b;--mute:#6b6782;--card:#fff;--red:#e8365d;--line:#cfc9e6}
-@media (prefers-color-scheme:dark){:root{--bg:#17142a;--ink:#f1eefc;--mute:#9a95b8;--card:#221e3a;--line:#3a3560}}
+:root{--bg:#f5f6f8;--card:#fff;--ink:#12151c;--mute:#667085;--line:#e3e6ec;--acc:#c0263d;--accs:#fbe9ec}
+@media(prefers-color-scheme:dark){:root{--bg:#0d0f14;--card:#161a22;--ink:#eef0f5;--mute:#8b93a5;--line:#262c38;--acc:#ef5b72;--accs:#2c1820}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "DM Sans",system-ui,sans-serif}
-main{max-width:720px;margin:0 auto;padding:28px 16px 64px}
-h1{font:800 clamp(2rem,8vw,3.2rem)/1 Archivo,system-ui,sans-serif;margin:0 0 8px;letter-spacing:-.02em}
-h2{font:800 1.25rem Archivo,system-ui,sans-serif;margin:28px 0 10px}
-.sub{color:var(--mute);margin:0 0 24px;max-width:52ch}
-.list{display:grid;gap:10px}
-.who{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 18px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:inherit;font:800 1.2rem Archivo,system-ui,sans-serif;cursor:pointer;text-align:left}
-.who small{font:500 .85rem "DM Sans",sans-serif;color:var(--mute)}
-.who[aria-pressed=true]{border-color:var(--red);background:repeating-linear-gradient(135deg,var(--card) 0 14px,color-mix(in srgb,var(--red) 12%,var(--card)) 14px 28px)}
-.who:focus-visible,button:focus-visible,label:focus-within{outline:3px solid var(--red);outline-offset:2px}
-.drop{display:block;padding:26px;border:2px dashed var(--line);border-radius:14px;text-align:center;color:var(--mute);cursor:pointer;background:var(--card)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Plus Jakarta Sans",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar,main{max-width:1040px;margin:0 auto;padding-left:16px;padding-right:16px}
+.bar{padding-top:12px;padding-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;gap:10px;align-items:center;font-weight:800;font-size:1.05rem;line-height:1.1}
+.brand small{display:block;font-weight:500;color:var(--mute);font-size:.75rem}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--acc);color:#fff;display:grid;place-items:center}
+nav{display:flex;gap:4px;margin-left:auto;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+nav button{border:0;background:none;color:var(--mute);padding:8px 14px;border-radius:9px;font:600 .88rem inherit;font-family:inherit;cursor:pointer}
+nav button[aria-current=page]{background:var(--ink);color:var(--bg)}
+@media(max-width:640px){nav{width:100%}nav button{flex:1;padding:8px 4px;font-size:.8rem}}
+main{padding-top:28px;padding-bottom:72px}
+h1{font-size:clamp(1.6rem,5vw,2.2rem);line-height:1.15;margin:0 0 6px;letter-spacing:-.02em;font-weight:800}
+h2{font-size:1.05rem;margin:0 0 4px}
+.lead{color:var(--mute);margin:0 0 22px;max-width:60ch}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:22px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.stat b{display:block;font-size:1.9rem;line-height:1.1;font-weight:800}
+.stat span{color:var(--mute);font-size:.85rem}
+.members{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.mem{display:flex;flex-direction:column;gap:16px}
+.top{display:flex;gap:12px;align-items:center}
+.av{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:800;flex:none;background:hsl(var(--h) 55% 88%);color:hsl(var(--h) 55% 28%)}
+@media(prefers-color-scheme:dark){.av{background:hsl(var(--h) 35% 24%);color:hsl(var(--h) 70% 82%)}}
+.top div{min-width:0}.top strong{display:block;overflow-wrap:anywhere}.top span{color:var(--mute);font-size:.85rem}
+.row{display:flex;gap:8px}
+.btn{flex:1;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 .88rem inherit;font-family:inherit;cursor:pointer}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.chip{padding:7px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 .85rem inherit;font-family:inherit;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+.wall{columns:3 210px;column-gap:12px}
+.shot{position:relative;margin:0 0 12px;break-inside:avoid;border-radius:12px;overflow:hidden;border:1px solid var(--line);cursor:zoom-in;background:var(--card)}
+.shot img{width:100%;display:block}
+.shot figcaption{position:absolute;left:8px;bottom:8px;padding:3px 10px;border-radius:99px;background:rgba(0,0,0,.7);color:#fff;font-size:.75rem;font-weight:600}
+.empty{text-align:center;color:var(--mute);padding:40px 16px}
+.form{max-width:560px;display:grid;gap:14px}
+label.f{display:grid;gap:6px;font-weight:600;font-size:.88rem}
+input[type=text],select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:130px;resize:vertical}
+.drop{display:block;padding:30px 16px;border:2px dashed var(--line);border-radius:14px;text-align:center;color:var(--mute);cursor:pointer;background:var(--bg)}
+.drop.on{border-color:var(--acc);background:var(--accs)}
 .drop input{position:absolute;opacity:0;width:1px;height:1px}
-.prev{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.prev img{width:72px;height:72px;object-fit:cover;border-radius:8px}
-.go{padding:13px 22px;border:0;border-radius:12px;background:var(--red);color:#fff;font:800 1rem Archivo,sans-serif;cursor:pointer}
-.go:disabled{opacity:.45;cursor:not-allowed}
-#msg{margin:10px 0 0;min-height:1.5em}
-.err{color:var(--red)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.grid img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;background:var(--card);display:block}
-.empty{color:var(--mute)}
-[hidden]{display:none}
+.prev{display:flex;gap:10px;flex-wrap:wrap}
+.pv{position:relative}.pv img{width:84px;height:84px;object-fit:cover;border-radius:10px;display:block}
+.pv button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:0;background:var(--ink);color:var(--bg);cursor:pointer;line-height:1}
+.note{font-size:.85rem;color:var(--mute)}.err{color:var(--acc)}.ok{color:#198754}
+.hp{position:absolute;left:-9999px}
+#lb{position:fixed;inset:0;z-index:250;background:rgba(5,7,10,.92);display:none;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:12px}
+#lb.on{display:flex}
+#lb img{max-width:100%;max-height:78vh;border-radius:8px}
+#lb p{color:#fff;margin:0;font-weight:600}
+.lbb{display:flex;gap:8px}.lbb button{padding:9px 16px;border-radius:10px;border:0;background:#fff;color:#111;font:600 .88rem inherit;font-family:inherit;cursor:pointer}
+.hidden{display:none!important}
+.bug-report-btn{position:fixed;bottom:20px;right:20px;z-index:200;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:1.25rem;cursor:pointer;transition:transform .2s,border-color .2s,background .2s;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.bug-report-btn:hover{transform:translateY(-2px);border-color:var(--acc);background:var(--bg)}
+.bug-modal-overlay{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+.bug-modal{position:relative;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;padding:32px;background:var(--card);border:1px solid var(--line);border-radius:12px;animation:fadeUp .25s ease}
+.bug-modal::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--acc),#d4a437)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.bug-modal-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:0;background:transparent;color:var(--mute);font-size:1.2rem;cursor:pointer}
+.bug-modal-close:hover{color:var(--ink);background:var(--bg)}
+.bug-modal-title{font:600 1.6rem "Cormorant Garamond",serif;margin:0 0 6px;color:var(--ink)}
+.bug-modal-desc{font-size:.85rem;color:var(--mute);margin:0 0 22px}
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:22px}
+.fg label{font-weight:600;font-size:.88rem}.fg label span{font-weight:400;color:var(--mute)}.fg .req{color:var(--acc);margin-left:2px}
+.fg input,.fg textarea{width:100%;padding:13px 16px;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--ink);font:inherit;font-size:.95rem}
+.fg textarea{resize:vertical}
+.fg input:focus,.fg textarea:focus{outline:0;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 25%,transparent)}
+.ferr{font-size:.75rem;color:var(--acc);min-height:16px}
+.btn-submit{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px 24px;margin-top:8px;background:var(--acc);color:#fff;border:0;border-radius:6px;font:600 .88rem inherit;font-family:inherit;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.btn-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 28px rgba(192,57,43,.3)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.form-msg{margin-top:16px;padding:13px 16px;border-radius:6px;font-size:.88rem;font-weight:500;line-height:1.5}
+.form-msg.success{background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.25);color:#1f8f55}
+.form-msg.error{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.25);color:var(--acc)}
+@media(prefers-color-scheme:dark){.form-msg.success{color:#5dca85}}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
+<header><div class="bar">
+  <div class="brand"><div class="logo" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4M12 17.5v.01"/></svg></div><div>Odommo Batch<small>Public evidence board</small></div></div>
+  <nav id="nav" aria-label="Sections">
+    <button data-v="members">Members</button><button data-v="evidence">Evidence</button><button data-v="upload">Upload</button>
+  </nav>
+</div></header>
+
 <main>
-  <h1>Odommo Batch<br>Toxic Board</h1>
-  <p class="sub">Pick a member, then upload screenshots as proof. Every screenshot is public.</p>
+<section id="v-members">
+  <h1>Group members on record</h1>
+  <p class="lead">Every member listed here has evidence submitted against them. Review the screenshots or add your own.</p>
+  <div class="stats">
+    <div class="panel stat"><b id="s1">0</b><span>Members listed</span></div>
+    <div class="panel stat"><b id="s2">0</b><span>Screenshots submitted</span></div>
+  </div>
+  <div class="members" id="members"></div>
+</section>
 
-  <div class="list" id="list" role="group" aria-label="Members"></div>
+<section id="v-evidence" hidden>
+  <h1>Evidence</h1>
+  <p class="lead">All screenshots are public. Tap an image to view it full size.</p>
+  <div class="chips" id="chips"></div>
+  <div class="wall" id="wall"></div>
+  <div class="empty panel" id="noev" hidden>No screenshots here yet.</div>
+</section>
 
-  <section id="panel" hidden>
-    <h2 id="ptitle"></h2>
-    <label class="drop">
-      <input type="file" id="file" accept="image/*" multiple>
-      Tap to choose screenshots (up to 5)
-    </label>
+<section id="v-upload" hidden>
+  <h1>Submit evidence</h1>
+  <p class="lead">Choose a member and upload up to 5 screenshots. Uploads are public and cannot be edited afterwards.</p>
+  <div class="panel form">
+    <label class="f">Member<select id="who"></select></label>
+    <label class="drop" id="drop"><input type="file" id="file" accept="image/*" multiple>Drag screenshots here or tap to choose (max 5)</label>
     <div class="prev" id="prev"></div>
-    <button class="go" id="go" disabled>Upload screenshots</button>
-    <p id="msg" role="status"></p>
+    <button class="btn p" id="go" disabled>Upload screenshots</button>
+    <p class="note" id="umsg" role="status"></p>
+  </div>
+</section>
 
-    <h2>Screenshots</h2>
-    <div class="grid" id="grid"></div>
-    <p class="empty" id="empty" hidden>No screenshots yet. Be the first to upload one.</p>
-  </section>
 </main>
 
+<button id="bugReportBtn" class="bug-report-btn" aria-label="Report a bug" title="Report a bug">🐞</button>
+<div id="bugModal" class="bug-modal-overlay hidden">
+  <div class="bug-modal" role="dialog" aria-modal="true" aria-labelledby="bugTitle">
+    <button id="bugModalClose" class="bug-modal-close" aria-label="Close">×</button>
+    <h3 class="bug-modal-title" id="bugTitle">Report a Bug</h3>
+    <p class="bug-modal-desc">Found something broken on the site? Let us know and we'll take a look.</p>
+    <form id="bugForm" novalidate>
+      <div class="fg"><label for="bugPhone">Phone Number <span>(optional)</span></label>
+        <input type="text" id="bugPhone" name="phone" placeholder="e.g. 01XXXXXXXXX"></div>
+      <div class="fg"><label for="bugDesc">Description<span class="req">*</span></label>
+        <textarea id="bugDesc" name="description" rows="4" placeholder="Describe the issue you ran into..."></textarea>
+        <span class="ferr" id="bugDescErr"></span></div>
+      <button type="submit" class="btn-submit" id="bugSubmitBtn"><span id="bugBtnLabel">Send Report</span><span id="bugBtnSpin" class="spin hidden" aria-hidden="true"></span></button>
+      <div id="bugFormMsg" class="form-msg hidden" role="alert"></div>
+    </form>
+  </div>
+</div>
+
+<div id="lb" role="dialog" aria-modal="true" aria-label="Screenshot viewer">
+  <img id="lbi" alt=""><p id="lbc"></p>
+  <div class="lbb"><button id="lp">Previous</button><button id="ln">Next</button><button id="lx">Close</button></div>
+</div>
+
 <script>
+/* ──────────────── BUG REPORT ──────────────── */
+const BUG_REPORT_ENDPOINT = "https://formspree.io/f/mwvjaany";
+
 const $ = (s) => document.querySelector(s);
 const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-let names = [], shots = {}, sel = null, picked = [];
+const ini = (n) => n.split(/[\s/]+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+const hue = (s) => Math.abs([...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 7)) % 360;
+const h = (t, a = {}, ...k) => { const e = document.createElement(t); for (const [x, v] of Object.entries(a)) x.startsWith("on") ? (e[x] = v) : e.setAttribute(x, v); e.append(...k); return e; };
+
+let names = [], shots = {}, view = "members", filter = "all", picked = [], lbList = [], lbIdx = 0;
+const all = () => names.flatMap((n) => (shots[slug(n)] || []).map((u) => ({ u, n })));
 
 async function init() {
-  try { names = await (await fetch("/toxic.json", { cache: "no-store" })).json(); }
-  catch { $("#list").textContent = "Could not load toxic.json."; return; }
+  try { names = await (await fetch("/toxic.json", { cache: "no-store" })).json(); } catch {}
   try { shots = await (await fetch("/.netlify/functions/list")).json(); } catch {}
-  renderList();
+  go((location.hash || "#members").slice(1));
 }
 
-function renderList() {
-  const list = $("#list");
-  list.innerHTML = "";
+function go(v) {
+  if (!$("#v-" + v)) v = "members";
+  view = v; location.hash = v;
+  document.querySelectorAll("main > section").forEach((s) => (s.hidden = s.id !== "v-" + v));
+  document.querySelectorAll("#nav button").forEach((b) => b.dataset.v === v ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+  ({ members: rMembers, evidence: rEvidence, upload: rUpload })[v]();
+  scrollTo(0, 0);
+}
+$("#nav").onclick = (e) => e.target.dataset.v && go(e.target.dataset.v);
+onhashchange = () => { const v = location.hash.slice(1); if (v !== view) go(v); };
+
+function rMembers() {
+  $("#s1").textContent = names.length; $("#s2").textContent = all().length;
+  const box = $("#members"); box.innerHTML = "";
   names.forEach((n) => {
-    const b = document.createElement("button");
-    b.className = "who";
-    b.setAttribute("aria-pressed", n === sel);
     const c = (shots[slug(n)] || []).length;
-    const t = document.createElement("span"); t.textContent = n;
-    const s = document.createElement("small"); s.textContent = c + (c === 1 ? " screenshot" : " screenshots");
-    b.append(t, s);
-    b.onclick = () => { sel = n; picked = []; $("#file").value = ""; renderList(); renderPanel(); };
-    list.append(b);
+    box.append(h("div", { class: "panel mem" },
+      h("div", { class: "top" },
+        h("div", { class: "av", style: "--h:" + hue(n) }, ini(n)),
+        h("div", {}, h("strong", {}, n), h("span", {}, c + (c === 1 ? " screenshot" : " screenshots")))),
+      h("div", { class: "row" },
+        h("button", { class: "btn", onclick: () => { filter = n; go("evidence"); } }, "View evidence"),
+        h("button", { class: "btn p", onclick: () => { $("#who").value = n; go("upload"); $("#who").value = n; } }, "Add evidence"))));
   });
+  if (!names.length) box.append(h("div", { class: "empty panel" }, "No members listed yet."));
 }
 
-function renderPanel() {
-  $("#panel").hidden = !sel;
-  if (!sel) return;
-  $("#ptitle").textContent = "Upload against " + sel;
-  const urls = shots[slug(sel)] || [];
-  const grid = $("#grid"); grid.innerHTML = "";
-  urls.forEach((u) => {
-    const a = document.createElement("a"); a.href = u; a.target = "_blank"; a.rel = "noopener";
-    const i = document.createElement("img"); i.src = u; i.loading = "lazy"; i.alt = "Screenshot against " + sel;
-    a.append(i); grid.append(a);
-  });
-  $("#empty").hidden = urls.length > 0;
-  renderPrev();
+function rEvidence() {
+  const chips = $("#chips"); chips.innerHTML = "";
+  ["all", ...names].forEach((n) => chips.append(h("button", { class: "chip", "aria-pressed": n === filter, onclick: () => { filter = n; rEvidence(); } }, n === "all" ? "All (" + all().length + ")" : n)));
+  lbList = all().filter((x) => filter === "all" || x.n === filter);
+  const wall = $("#wall"); wall.innerHTML = "";
+  lbList.forEach((x, i) => wall.append(h("figure", { class: "shot", onclick: () => openLb(i) },
+    h("img", { src: x.u, loading: "lazy", alt: "Screenshot against " + x.n }), h("figcaption", {}, x.n))));
+  $("#noev").hidden = lbList.length > 0;
 }
 
-function renderPrev() {
-  const p = $("#prev"); p.innerHTML = "";
-  picked.forEach((d) => { const i = document.createElement("img"); i.src = d; i.alt = "Selected screenshot"; p.append(i); });
-  $("#go").disabled = picked.length === 0;
+function openLb(i) { lbIdx = i; $("#lb").classList.add("on"); showLb(); $("#lx").focus(); }
+function showLb() { const x = lbList[lbIdx]; $("#lbi").src = x.u; $("#lbi").alt = "Screenshot against " + x.n; $("#lbc").textContent = x.n + " · " + (lbIdx + 1) + " of " + lbList.length; }
+const step = (d) => { lbIdx = (lbIdx + d + lbList.length) % lbList.length; showLb(); };
+$("#lp").onclick = () => step(-1); $("#ln").onclick = () => step(1); $("#lx").onclick = () => $("#lb").classList.remove("on");
+$("#lb").onclick = (e) => e.target.id === "lb" && $("#lx").click();
+addEventListener("keydown", (e) => { if (!$("#lb").classList.contains("on")) return; if (e.key === "Escape") $("#lx").click(); if (e.key === "ArrowLeft") step(-1); if (e.key === "ArrowRight") step(1); });
+
+function rUpload() {
+  const cur = $("#who").value;
+  $("#who").innerHTML = ""; names.forEach((n) => $("#who").append(h("option", {}, n)));
+  if (names.includes(cur)) $("#who").value = cur;
+  drawPrev();
 }
 
-// Shrink to max 1600px JPEG so uploads stay well under Netlify's 6 MB limit
 async function compress(file) {
-  const bmp = await createImageBitmap(file);
-  const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
-  const c = document.createElement("canvas");
-  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
-  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  const b = await createImageBitmap(file), k = Math.min(1, 1600 / Math.max(b.width, b.height));
+  const c = h("canvas"); c.width = Math.round(b.width * k); c.height = Math.round(b.height * k);
+  c.getContext("2d").drawImage(b, 0, 0, c.width, c.height);
   return c.toDataURL("image/jpeg", 0.8);
 }
-
-$("#file").onchange = async (e) => {
-  const files = [...e.target.files].slice(0, 5);
-  setMsg("Preparing…");
-  try { picked = await Promise.all(files.map(compress)); setMsg(""); }
-  catch { picked = []; setMsg("Could not read one of those images.", true); }
-  renderPrev();
-};
-
-function setMsg(t, err) { const m = $("#msg"); m.textContent = t; m.className = err ? "err" : ""; }
+function drawPrev() {
+  const p = $("#prev"); p.innerHTML = "";
+  picked.forEach((d, i) => p.append(h("div", { class: "pv" }, h("img", { src: d, alt: "Selected screenshot" }), h("button", { "aria-label": "Remove", onclick: () => { picked.splice(i, 1); drawPrev(); } }, "×"))));
+  $("#go").disabled = !picked.length;
+}
+async function addFiles(list) {
+  const files = [...list].filter((f) => f.type.startsWith("image/")).slice(0, 5 - picked.length);
+  msg("#umsg", "Preparing…");
+  try { picked.push(...(await Promise.all(files.map(compress)))); msg("#umsg", ""); }
+  catch { msg("#umsg", "Could not read one of those images.", 1); }
+  drawPrev();
+}
+const msg = (s, t, err) => { const m = $(s); m.textContent = t; m.className = "note" + (err ? " err" : ""); };
+$("#file").onchange = (e) => { addFiles(e.target.files); e.target.value = ""; };
+const dz = $("#drop");
+["dragenter", "dragover"].forEach((t) => dz.addEventListener(t, (e) => { e.preventDefault(); dz.classList.add("on"); }));
+["dragleave", "drop"].forEach((t) => dz.addEventListener(t, (e) => { e.preventDefault(); dz.classList.remove("on"); }));
+dz.addEventListener("drop", (e) => addFiles(e.dataTransfer.files));
 
 $("#go").onclick = async () => {
-  $("#go").disabled = true; setMsg("Uploading…");
+  const n = $("#who").value; $("#go").disabled = true; msg("#umsg", "Uploading…");
   try {
-    const r = await fetch("/.netlify/functions/upload", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: sel, images: picked }),
-    });
-    const j = await r.json();
-    if (!r.ok) throw new Error(j.error || "Upload failed.");
-    shots[slug(sel)] = [...j.urls, ...(shots[slug(sel)] || [])];
-    picked = []; $("#file").value = "";
-    setMsg("Uploaded. Screenshots may take a few minutes to appear for everyone.");
-    renderList(); renderPanel();
-  } catch (e) { setMsg(e.message, true); $("#go").disabled = false; }
+    const r = await fetch("/.netlify/functions/upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: n, images: picked }) });
+    const j = await r.json(); if (!r.ok) throw new Error(j.error || "Upload failed.");
+    shots[slug(n)] = [...j.urls, ...(shots[slug(n)] || [])]; picked = [];
+    drawPrev(); msg("#umsg", "Uploaded. It may take a few minutes to appear for everyone.");
+    $("#umsg").classList.add("ok");
+  } catch (e) { msg("#umsg", e.message, 1); $("#go").disabled = false; }
 };
 
+const showMessage = (el, type, text) => { el.textContent = text; el.className = "form-msg " + type; };
+const hideMessage = (el) => { el.className = "form-msg hidden"; el.textContent = ""; };
+const setError = (id, m) => { $("#" + id).textContent = m; };
+
+function initBugReport() {
+  const btn = $("#bugReportBtn"), overlay = $("#bugModal"), closeBtn = $("#bugModalClose"), form = $("#bugForm"),
+    submitBtn = $("#bugSubmitBtn"), btnLabel = $("#bugBtnLabel"), btnSpin = $("#bugBtnSpin"), formMsg = $("#bugFormMsg");
+  if (!btn || !overlay || !form) return;
+  const openModal = () => { overlay.classList.remove("hidden"); $("#bugDesc").focus(); };
+  const closeModal = () => { overlay.classList.add("hidden"); form.reset(); setError("bugDescErr", ""); hideMessage(formMsg); };
+  btn.addEventListener("click", openModal);
+  closeBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !overlay.classList.contains("hidden")) closeModal(); });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault(); setError("bugDescErr", ""); hideMessage(formMsg);
+    const phone = $("#bugPhone").value.trim(), description = $("#bugDesc").value.trim();
+    if (!description) { setError("bugDescErr", "Please describe the issue."); return; }
+    submitBtn.disabled = true; btnLabel.textContent = "Sending"; btnSpin.classList.remove("hidden");
+    try {
+      const res = await fetch(BUG_REPORT_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ phone: phone || "Not provided", description }) });
+      if (res.status === 200) { showMessage(formMsg, "success", "✅ Thanks! Your report has been sent."); form.reset(); setTimeout(closeModal, 1800); }
+      else showMessage(formMsg, "error", "❌ Failed to send report. Please try again.");
+    } catch { showMessage(formMsg, "error", "❌ Network error. Check your connection and try again."); }
+    finally { submitBtn.disabled = false; btnLabel.textContent = "Send Report"; btnSpin.classList.add("hidden"); }
+  });
+}
+
+initBugReport();
 init();
 </script>
 </body>
